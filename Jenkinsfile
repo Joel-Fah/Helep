@@ -24,17 +24,17 @@ pipeline {
         bat 'docker --version'
         bat 'kubectl version --client=true'
         bat 'helm version'
-        bat 'py --version'
+        bat 'docker run --rm python:3.12-slim python --version'
       }
     }
 
     stage('Python Syntax Checks') {
       steps {
-        bat 'py -m py_compile services/user-service/app/main.py services/user-service/app/db.py services/user-service/app/events.py'
-        bat 'py -m py_compile services/sos-service/app/main.py services/sos-service/app/db.py services/sos-service/app/events.py'
-        bat 'py -m py_compile services/dispatch-service/app/main.py services/dispatch-service/app/db.py services/dispatch-service/app/events.py services/dispatch-service/app/matching.py'
-        bat 'py -m py_compile services/notification-service/app/main.py services/notification-service/app/db.py services/notification-service/app/events.py'
-        bat 'py -m py_compile services/analytics-service/app/main.py services/analytics-service/app/db.py services/analytics-service/app/events.py'
+        bat 'docker run --rm -v "%CD%":/workspace -w /workspace python:3.12-slim python -m py_compile services/user-service/app/main.py services/user-service/app/db.py services/user-service/app/events.py'
+        bat 'docker run --rm -v "%CD%":/workspace -w /workspace python:3.12-slim python -m py_compile services/sos-service/app/main.py services/sos-service/app/db.py services/sos-service/app/events.py'
+        bat 'docker run --rm -v "%CD%":/workspace -w /workspace python:3.12-slim python -m py_compile services/dispatch-service/app/main.py services/dispatch-service/app/db.py services/dispatch-service/app/events.py services/dispatch-service/app/matching.py'
+        bat 'docker run --rm -v "%CD%":/workspace -w /workspace python:3.12-slim python -m py_compile services/notification-service/app/main.py services/notification-service/app/db.py services/notification-service/app/events.py'
+        bat 'docker run --rm -v "%CD%":/workspace -w /workspace python:3.12-slim python -m py_compile services/analytics-service/app/main.py services/analytics-service/app/db.py services/analytics-service/app/events.py'
       }
     }
 
