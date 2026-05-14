@@ -16,4 +16,5 @@ helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- define "helep.serviceLabels" -}}
 {{ include "helep.labels" .root }}
 app.kubernetes.io/component: {{ .name }}
+app: {{ .name }}
 {{- end -}}
