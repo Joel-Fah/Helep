@@ -1,0 +1,133 @@
+global:
+  kafkaBootstrap: helep-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+  jwtSecret: change-me-for-demo
+  imagePullPolicy: IfNotPresent
+  storageClassName: ""
+
+services:
+  user-service:
+    image: helep/user-service
+    tag: dev
+    port: 8001
+    replicas: 1
+    dbFile: user.db
+    needsJwt: true
+    env: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    hpa:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+  sos-service:
+    image: helep/sos-service
+    tag: dev
+    port: 8002
+    replicas: 1
+    dbFile: sos.db
+    needsJwt: true
+    env: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    hpa:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+  dispatch-service:
+    image: helep/dispatch-service
+    tag: dev
+    port: 8003
+    replicas: 1
+    dbFile: dispatch.db
+    needsJwt: false
+    env:
+      MATCHER: nearest
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    hpa:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+  notification-service:
+    image: helep/notification-service
+    tag: dev
+    port: 8004
+    replicas: 1
+    dbFile: notification.db
+    needsJwt: false
+    env: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    hpa:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+  analytics-service:
+    image: helep/analytics-service
+    tag: dev
+    port: 8005
+    replicas: 1
+    dbFile: analytics.db
+    needsJwt: false
+    env: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    hpa:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+
+persistence:
+  size: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    user-service: user.helep.local
+    sos-service: sos.helep.local
+    dispatch-service: dispatch.helep.local
+    notification-service: notification.helep.local
+    analytics-service: analytics.helep.local
+
+networkPolicy:
+  enabled: true
+  kafkaNamespace: kafka
+  ingressNamespace: ingress-nginx
+  monitoringNamespace: monitoring
+
+serviceMonitor:
+  enabled: false
+  namespace: monitoring
+  interval: 15s

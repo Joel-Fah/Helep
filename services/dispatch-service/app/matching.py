@@ -54,8 +54,25 @@ class CredibilityWeightedMatcher:
         return {"id": best["id"], "score": best_score}
 
 
+class RoundRobinMatcher:
+    def __init__(self):
+        self._index = 0
+
+    def pick(self, victim_lat, victim_lon, responders):
+        res_list = list(responders)
+        if not res_list:
+            return None
+        selected = res_list[self._index % len(res_list)]
+        self._index += 1
+        return {"id": selected["id"], "reason": "round_robin_rotation"}
+
+
+_rr_matcher = RoundRobinMatcher()
+
 def matcher() -> Matcher:
     name = os.getenv("MATCHER", "nearest").lower()
     if name == "credibility":
         return CredibilityWeightedMatcher()
+    if name == "round_robin":
+        return _rr_matcher
     return NearestMatcher()

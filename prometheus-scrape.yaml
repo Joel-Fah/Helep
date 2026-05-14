@@ -1,0 +1,9 @@
+- job_name: helep-services
+  metrics_path: /metrics
+  static_configs:
+    - targets:
+        - user-service.helep.svc.cluster.local:8001
+        - sos-service.helep.svc.cluster.local:8002
+        - dispatch-service.helep.svc.cluster.local:8003
+        - notification-service.helep.svc.cluster.local:8004
+        - analytics-service.helep.svc.cluster.local:8005

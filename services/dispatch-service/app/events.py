@@ -55,6 +55,8 @@ async def health() -> bool:
 
 
 # ---- Circuit breaker stub (student to complete) ----
+import time
+
 class CircuitBreaker:
     def __init__(self, fail_threshold: int = 5, reset_after_s: float = 10.0):
         self.fail_threshold = fail_threshold
@@ -63,14 +65,20 @@ class CircuitBreaker:
         self.opened_at: float | None = None
 
     def allow(self) -> bool:
-        # TODO (student): implement open/half-open/closed state machine
+        if self.fails >= self.fail_threshold:
+            if self.opened_at and (time.time() - self.opened_at) > self.reset_after_s:
+                return True
+            return False
         return True
 
     def record_success(self) -> None:
         self.fails = 0
+        self.opened_at = None
 
     def record_failure(self) -> None:
         self.fails += 1
+        if self.fails >= self.fail_threshold and self.opened_at is None:
+            self.opened_at = time.time()
 
 
 _breaker = CircuitBreaker()
